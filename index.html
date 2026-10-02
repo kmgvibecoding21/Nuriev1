@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Экзамен по ПДД Республики Казахстан</title>
+<style>
+:root{
+  --blue:#1A56B0; --blue-d:#123F86; --blue-l:#3F7DD6;
+  --navy:#0E2A4D; --asphalt:#1B3557;
+  --sky:#DCEBFA; --ice:#F2F7FC; --line:#C9DAEE; --muted:#5B6F88;
+  --ok:#13875A; --ok-bg:#E3F5EC; --bad:#C93434; --bad-bg:#FBE9E9; --amber:#D08A0C;
+  --display:"Bahnschrift","DIN Alternate","Segoe UI",system-ui,sans-serif;
+  --body:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--body);font-size:16px;line-height:1.55;color:var(--navy);background:var(--ice);min-height:100vh}
+button,input{font:inherit}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue-l);outline-offset:2px}
+
+/* Шапка */
+.top{background:var(--navy);color:#fff}
+.top-in{max-width:960px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:19px;font-weight:600;letter-spacing:.2px;color:#fff;text-decoration:none;background:none;border:0;cursor:pointer;padding:0}
+.brand-mark{width:30px;height:30px;border-radius:6px;background:var(--blue);border:2px solid #fff;display:grid;place-items:center;font-size:15px}
+.top nav{margin-left:auto;display:flex;gap:4px}
+.top nav button{background:none;border:0;color:#C9DAEE;padding:8px 12px;border-radius:8px;cursor:pointer}
+.top nav button:hover,.top nav button[aria-current="page"]{color:#fff;background:rgba(255,255,255,.1)}
+
+main{max-width:960px;margin:0 auto;padding:28px 20px 60px}
+
+/* Типографика */
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15;margin:0 0 .5em}
+h1{font-size:clamp(30px,5vw,46px);letter-spacing:-.3px}
+h2{font-size:26px}
+h3{font-size:19px}
+.lead{font-size:18px;color:var(--muted);max-width:62ch}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+/* Кнопки */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:10px;border:2px solid var(--blue);background:var(--blue);color:#fff;font-weight:600;cursor:pointer;transition:background .15s}
+.btn:hover{background:var(--blue-d);border-color:var(--blue-d)}
+.btn.ghost{background:#fff;color:var(--blue)}
+.btn.ghost:hover{background:var(--sky)}
+.btn.quiet{background:transparent;border-color:transparent;color:var(--blue)}
+.btn.quiet:hover{background:var(--sky)}
+.btn.danger{background:var(--bad);border-color:var(--bad)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* Панели */
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px}
+.stack>*+*{margin-top:16px}
+
+/* Главная: дорога */
+.hero{padding:24px 0 8px}
+.road{margin:32px 0;background:var(--asphalt);border-radius:16px;padding:26px 22px 30px;position:relative;overflow:hidden}
+.road::after{content:"";position:absolute;left:0;right:0;bottom:12px;height:4px;background:repeating-linear-gradient(90deg,#fff 0 36px,transparent 36px 64px);opacity:.85}
+.plates{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.plate{background:var(--blue);color:#fff;border-radius:10px;padding:5px}
+.plate-in{border:2px solid #fff;border-radius:7px;padding:12px 14px}
+.plate b{display:block;font-family:var(--display);font-size:24px;font-weight:600;line-height:1.1}
+.plate span{font-size:14px;color:#DCEBFA}
+.resume{border-left:5px solid var(--amber)}
+
+/* Формы */
+.field{display:block}
+.field label{display:block;font-weight:600;margin-bottom:6px}
+.field input[type=text],.field input[type=password],.field input[type=number],.search{width:100%;height:48px;padding:0 14px;border:2px solid var(--line);border-radius:10px;background:#fff;color:var(--navy)}
+.field input:focus,.search:focus{border-color:var(--blue);outline:none}
+.field.err input{border-color:var(--bad)}
+.err-msg{color:var(--bad);font-size:14px;margin-top:4px;min-height:1.2em}
+.check{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--blue)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.notice{background:var(--sky);border-radius:10px;padding:14px 16px}
+.notice.bad{background:var(--bad-bg);color:#7a1d1d}
+
+/* Экзамен */
+.exam-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.exam-head .who{font-weight:600}
+.timer{margin-left:auto;background:var(--blue);border-radius:10px;padding:4px;color:#fff}
+.timer-in{border:2px solid #fff;border-radius:7px;padding:4px 14px;font-family:var(--display);font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2;min-width:112px;text-align:center}
+.timer.warn{background:var(--amber)}
+.timer.crit{background:var(--bad)}
+@media (prefers-reduced-motion:no-preference){.timer.crit{animation:pulse 1s infinite}}
+@keyframes pulse{50%{opacity:.75}}
+
+.lane{background:var(--asphalt);border-radius:14px;padding:12px;display:flex;gap:8px;overflow-x:auto;position:relative}
+.qnum{flex:1 0 46px;height:46px;border-radius:8px;border:2px solid rgba(255,255,255,.55);background:transparent;color:#fff;font-family:var(--display);font-size:18px;font-weight:600;cursor:pointer;position:relative}
+.qnum:hover{border-color:#fff}
+.qnum.answered{background:#fff;color:var(--navy);border-color:#fff}
+.qnum.skipped::after{content:"";position:absolute;left:8px;right:8px;bottom:4px;height:4px;border-radius:2px;background:var(--amber)}
+.qnum.current{background:var(--blue);color:#fff;border-color:#fff;box-shadow:0 0 0 3px var(--blue-l)}
+.lane-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 2px 20px;font-size:14px;color:var(--muted)}
+.legend{display:flex;gap:14px;flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:5px;border:2px solid var(--asphalt)}
+
+.qcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px}
+.qtopic{font-size:14px;color:var(--muted);margin-bottom:6px}
+.illu{border-radius:10px;overflow:hidden;background:#EAF2FB;margin:6px 0 18px;cursor:zoom-in;border:1px solid var(--line)}
+.illu svg{display:block;width:100%;height:auto;max-height:340px}
+.qtext{font-size:21px;line-height:1.4;font-weight:600;margin:0 0 18px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:14px;align-items:center;text-align:left;width:100%;padding:14px 16px;border:2px solid var(--line);border-radius:10px;background:#fff;color:var(--navy);cursor:pointer;font-size:17px;transition:border-color .12s,background .12s}
+.opt:hover{border-color:var(--blue-l)}
+.opt .let{flex:0 0 32px;height:32px;border-radius:8px;display:grid;place-items:center;background:var(--sky);color:var(--blue-d);font-family:var(--display);font-weight:600}
+.opt[aria-checked="true"]{border-color:var(--blue);background:var(--sky)}
+.opt[aria-checked="true"] .let{background:var(--blue);color:#fff}
+.qnav{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.qnav .grow{flex:1}
+
+/* Результат */
+.verdict{border-radius:16px;padding:28px;color:#fff;display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.verdict.pass{background:var(--ok)}
+.verdict.fail{background:var(--bad)}
+.verdict h1{margin:0 0 6px;font-size:clamp(28px,4.5vw,40px)}
+.score-ring{flex:0 0 auto}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.fact{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.fact span{display:block;font-size:13px;color:var(--muted)}
+.fact b{font-family:var(--display);font-size:22px;font-weight:600}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:8px 14px;cursor:pointer;color:var(--navy)}
+.seg button[aria-pressed="true"]{background:var(--blue);color:#fff}
+.review{margin-top:14px;display:grid;gap:12px}
+.rv{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.rv summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;gap:12px;align-items:flex-start;font-weight:600}
+.rv summary::-webkit-details-marker{display:none}
+.mark{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:14px}
+.mark.ok{background:var(--ok)}.mark.bad{background:var(--bad)}
+.rv-body{padding:0 18px 18px}
+.ropt{padding:10px 14px;border-radius:8px;border:1px solid var(--line);margin-top:8px;display:flex;justify-content:space-between;gap:10px}
+.ropt.correct{background:var(--ok-bg);border-color:var(--ok)}
+.ropt.wrong{background:var(--bad-bg);border-color:var(--bad)}
+.ropt em{font-style:normal;font-size:13px;font-weight:600;white-space:nowrap}
+.explain{margin-top:12px;padding:12px 14px;background:var(--ice);border-radius:8px;font-size:15px}
+
+/* Админка */
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:22px;overflow-x:auto}
+.tabs button{background:none;border:0;padding:10px 16px;cursor:pointer;color:var(--muted);font-weight:600;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--blue);border-color:var(--blue)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}
+.kpi span{font-size:13px;color:var(--muted)}
+.kpi b{display:block;font-family:var(--display);font-size:30px;font-weight:600;line-height:1.2}
+.chart{display:flex;align-items:flex-end;gap:6px;height:180px;padding-top:10px}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%;font-size:12px;color:var(--muted);min-width:0}
+.bar .b{width:100%;border-radius:5px 5px 0 0;background:var(--blue);min-height:2px;position:relative}
+.bar .b.pass{background:var(--ok)}
+.bar .b .p{position:absolute;left:0;right:0;bottom:0;background:var(--ok);border-radius:5px 5px 0 0}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--ice);font-weight:600;font-size:13px;color:var(--muted)}
+tbody tr:hover{background:var(--ice)}
+tbody tr.click{cursor:pointer}
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:13px;font-weight:600}
+.tag.ok{background:var(--ok-bg);color:var(--ok)}.tag.bad{background:var(--bad-bg);color:var(--bad)}.tag.prog{background:var(--sky);color:var(--blue-d)}
+.meter{height:8px;background:var(--sky);border-radius:4px;overflow:hidden;min-width:90px}
+.meter i{display:block;height:100%;background:var(--blue)}
+
+/* Модальное окно */
+.overlay{position:fixed;inset:0;background:rgba(14,42,77,.55);display:grid;place-items:center;padding:20px;z-index:50}
+.modal{background:#fff;border-radius:16px;max-width:520px;width:100%;padding:26px;box-shadow:0 20px 60px rgba(14,42,77,.3)}
+.modal.wide{max-width:900px;padding:12px;background:#EAF2FB}
+.modal.wide svg{width:100%;height:auto;display:block}
+@media (prefers-reduced-motion:no-preference){.modal{animation:pop .16s ease-out}@keyframes pop{from{transform:scale(.96);opacity:0}}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 20px;border-radius:10px;z-index:60;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+
+footer{max-width:960px;margin:0 auto;padding:0 20px 30px;font-size:13px;color:var(--muted)}
+
+@media (max-width:640px){
+  .grid2{grid-template-columns:1fr}
+  main{padding:20px 14px 90px}
+  .qcard{padding:18px}
+  .qtext{font-size:18px}
+  .qnav{position:fixed;left:0;right:0;bottom:0;background:#fff;padding:10px 14px;border-top:1px solid var(--line);margin:0;z-index:20}
+  .qnav .btn{flex:1;padding:0 10px}
+  .qnav .grow{display:none}
+  .timer-in{font-size:22px;min-width:90px}
+}
+@media print{
+  .top,.no-print,footer{display:none!important}
+  body{background:#fff}
+  .rv{break-inside:avoid}
+  details.rv>.rv-body{display:block}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <button class="brand" data-go="home"><span class="brand-mark">🚦</span>Экзамен по ПДД РК</button>
+    <nav id="nav">
+      <button data-go="home">Экзамен</button>
+      <button data-go="admin">Администратор</button>
+    </nav>
+  </div>
+</header>
+<main id="app"></main>
+<footer id="foot"></footer>
+
+<script>
+"use strict";
+/* =====================================================================
+   ИЛЛЮСТРАЦИИ (SVG). Знаки нарисованы упрощённо, по общей форме.
+   ===================================================================== */
+const RED="#D32F2F", SBLUE="#1F5FBF";
+const wrap=(inner,label)=>`<svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${label}"><rect width="320" height="180" fill="#EAF2FB"/>${inner}</svg>`;
+function octagon(cx,cy,r){let p=[];for(let i=0;i<8;i++){const a=Math.PI/8+i*Math.PI/4;p.push((cx+r*Math.cos(a)).toFixed(1)+","+(cy+r*Math.sin(a)).toFixed(1))}return p.join(" ")}
+const roadH=(y,h)=>`<rect x="0" y="${y}" width="320" height="${h}" fill="#6B7785"/>`;
+const car=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${c}" stroke="#0E2A4D" stroke-width="1.5"/>`;
+const lbl=(x,y,t,c="#0E2A4D")=>`<text x="${x}" y="${y}" font-family="Segoe UI,Arial" font-size="12" font-weight="600" fill="${c}" text-anchor="middle">${t}</text>`;
+const arrowDefs=`<defs><marker id="ah" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#fff"/></marker><marker id="ahb" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1A56B0"/></marker></defs>`;
+const blink=(dur,begin="0s")=>`<animate attributeName="opacity" values="1;1;0.12;0.12;1" keyTimes="0;0.45;0.5;0.95;1" dur="${dur}" begin="${begin}" repeatCount="indefinite"/>`;
+function lightBox(r,y,g,extra=""){const off="#3F4A52";return `<rect x="135" y="12" width="50" height="156" rx="10" fill="#263238"/>
+ <circle cx="160" cy="42" r="17" fill="${r||off}"/><circle cx="160" cy="90" r="17" fill="${y||off}">${extra}</circle><circle cx="160" cy="138" r="17" fill="${g||off}"/>`}
+
+const IMG={
+ noEntry:wrap(`<circle cx="160" cy="90" r="70" fill="${RED}" stroke="#fff" stroke-width="4"/><rect x="108" y="78" width="104" height="24" fill="#fff"/>`,"Круглый красный знак с белой горизонтальной полосой"),
+ noTraffic:wrap(`<circle cx="160" cy="90" r="63" fill="#fff" stroke="${RED}" stroke-width="14"/>`,"Круглый белый знак с красной каймой"),
+ noStopping:wrap(`<circle cx="160" cy="90" r="63" fill="${SBLUE}" stroke="${RED}" stroke-width="14"/><line x1="120" y1="50" x2="200" y2="130" stroke="${RED}" stroke-width="12"/><line x1="200" y1="50" x2="120" y2="130" stroke="${RED}" stroke-width="12"/>`,"Синий круглый знак с красной каймой и красным крестом"),
+ noParking:wrap(`<circle cx="160" cy="90" r="63" fill="${SBLUE}" stroke="${RED}" stroke-width="14"/><line x1="120" y1="50" x2="200" y2="130" stroke="${RED}" stroke-width="12"/>`,"Синий круглый знак с красной каймой и одной диагональной линией"),
+ mainRoad:wrap(`<polygon points="160,18 232,90 160,162 88,90" fill="#fff" stroke="#333" stroke-width="2"/><polygon points="160,38 212,90 160,142 108,90" fill="#F6C21C"/>`,"Белый ромб с жёлтым ромбом внутри"),
+ giveWay:wrap(`<polygon points="84,32 236,32 160,160" fill="#fff" stroke="${RED}" stroke-width="14" stroke-linejoin="round"/>`,"Перевёрнутый белый треугольник с красной каймой"),
+ stop:wrap(`<polygon points="${octagon(160,90,72)}" fill="${RED}" stroke="#fff" stroke-width="4"/><text x="160" y="105" font-family="Bahnschrift,Arial" font-size="44" font-weight="700" fill="#fff" text-anchor="middle">STOP</text>`,"Красный восьмиугольник с надписью STOP"),
+ speed40:wrap(`<circle cx="160" cy="90" r="63" fill="#fff" stroke="${RED}" stroke-width="14"/><text x="160" y="112" font-family="Bahnschrift,Arial" font-size="62" font-weight="700" fill="#111" text-anchor="middle">40</text>`,"Круглый знак с красной каймой и числом 40"),
+ tlYellowBlink:wrap(lightBox(null,"#F6C21C",null,blink("1s"))+lbl(250,95,"жёлтый мигает"),"Светофор, жёлтый сигнал мигает"),
+ tlRedYellow:wrap(lightBox(RED,"#F6C21C",null),"Светофор, горят красный и жёлтый сигналы одновременно"),
+ tlYellow:wrap(lightBox(null,"#F6C21C",null)+lbl(250,95,"жёлтый горит"),"Светофор, горит жёлтый сигнал"),
+ tlRedArrow:wrap(lightBox(RED,null,null)+`<rect x="188" y="114" width="46" height="48" rx="8" fill="#263238"/><circle cx="211" cy="138" r="17" fill="#21A35B"/><path d="M200 138 H220 M214 131 L221 138 L214 145" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`+lbl(70,46,"горит красный")+lbl(70,142,"доп. секция →"),"Светофор: красный сигнал и включённая дополнительная секция со стрелкой направо"),
+ rail:wrap(`<rect x="155" y="105" width="10" height="70" fill="#7A8794"/><rect x="92" y="58" width="136" height="52" rx="26" fill="#263238"/><circle cx="124" cy="84" r="18" fill="${RED}">${blink("1.2s")}</circle><circle cx="196" cy="84" r="18" fill="${RED}">${blink("1.2s","0.6s")}</circle>`+lbl(160,40,"сигналы мигают поочерёдно"),"Светофор на железнодорожном переезде, два красных сигнала мигают поочерёдно"),
+ intersection:wrap(arrowDefs+roadH(65,50)+`<rect x="135" y="0" width="50" height="180" fill="#6B7785"/><rect x="135" y="65" width="50" height="50" fill="#6B7785"/>
+  <line x1="0" y1="90" x2="135" y2="90" stroke="#fff" stroke-width="2" stroke-dasharray="10 8"/><line x1="185" y1="90" x2="320" y2="90" stroke="#fff" stroke-width="2" stroke-dasharray="10 8"/>
+  <line x1="160" y1="0" x2="160" y2="65" stroke="#fff" stroke-width="2" stroke-dasharray="10 8"/><line x1="160" y1="115" x2="160" y2="180" stroke="#fff" stroke-width="2" stroke-dasharray="10 8"/>
+  ${car(164,128,17,30,"#1A56B0")}<line x1="172.5" y1="126" x2="172.5" y2="106" stroke="#fff" stroke-width="3" marker-end="url(#ah)"/>
+  ${car(222,69,30,17,RED)}<line x1="220" y1="77.5" x2="200" y2="77.5" stroke="#fff" stroke-width="3" marker-end="url(#ah)"/>
+  ${lbl(210,150,"Вы","#1A56B0")}`,"Перекрёсток равнозначных дорог: ваш синий автомобиль едет прямо снизу, красный приближается справа"),
+ leftTurn:wrap(arrowDefs+roadH(65,50)+`<rect x="135" y="0" width="50" height="180" fill="#6B7785"/>
+  <line x1="0" y1="90" x2="135" y2="90" stroke="#fff" stroke-width="2" stroke-dasharray="10 8"/><line x1="185" y1="90" x2="320" y2="90" stroke="#fff" stroke-width="2" stroke-dasharray="10 8"/>
+  <line x1="160" y1="0" x2="160" y2="65" stroke="#fff" stroke-width="2" stroke-dasharray="10 8"/><line x1="160" y1="115" x2="160" y2="180" stroke="#fff" stroke-width="2" stroke-dasharray="10 8"/>
+  ${car(164,128,17,30,"#1A56B0")}<path d="M172 124 Q172 82 128 80" stroke="#fff" stroke-width="3" fill="none" marker-end="url(#ah)"/>
+  ${car(139,18,17,30,"#2E9E5B")}<line x1="147.5" y1="50" x2="147.5" y2="70" stroke="#fff" stroke-width="3" marker-end="url(#ah)"/>
+  ${lbl(210,150,"Вы","#1A56B0")}`,"Перекрёсток: вы поворачиваете налево, навстречу прямо едет зелёный автомобиль"),
+ solidLine:wrap(arrowDefs+roadH(45,90)+`<line x1="0" y1="90" x2="320" y2="90" stroke="#fff" stroke-width="4"/>
+  ${car(40,101,38,20,"#1A56B0")}${car(150,98,70,26,"#8A96A3")}
+  <path d="M80 111 Q110 111 120 70 Q130 62 160 62" stroke="#fff" stroke-width="3" fill="none" stroke-dasharray="7 5" marker-end="url(#ah)"/>
+  ${lbl(59,150,"Вы","#1A56B0")}`,"Дорога со сплошной линией разметки посередине, впереди вас грузовик"),
+ triangle:wrap(roadH(55,70)+`<line x1="0" y1="90" x2="320" y2="90" stroke="#fff" stroke-width="2" stroke-dasharray="12 10"/>
+  ${car(230,96,48,24,"#1A56B0")}<polygon points="80,96 94,121 66,121" fill="none" stroke="${RED}" stroke-width="4"/>
+  <line x1="80" y1="140" x2="230" y2="140" stroke="#0E2A4D" stroke-width="1.5"/><line x1="80" y1="134" x2="80" y2="146" stroke="#0E2A4D" stroke-width="1.5"/><line x1="230" y1="134" x2="230" y2="146" stroke="#0E2A4D" stroke-width="1.5"/>
+  ${lbl(155,160,"? м")}${lbl(160,40,"населённый пункт")}`,"Остановившийся автомобиль и знак аварийной остановки позади него на неизвестном расстоянии"),
+ zebra:wrap(arrowDefs+roadH(45,90)+`<line x1="0" y1="90" x2="140" y2="90" stroke="#fff" stroke-width="2" stroke-dasharray="12 10"/>
+  ${[0,1,2,3,4,5,6,7].map(i=>`<rect x="150" y="${49+i*11}" width="44" height="6" fill="#fff"/>`).join("")}
+  <circle cx="172" cy="74" r="6" fill="#0E2A4D"/><line x1="172" y1="80" x2="172" y2="96" stroke="#0E2A4D" stroke-width="4"/><line x1="172" y1="96" x2="166" y2="108" stroke="#0E2A4D" stroke-width="4"/><line x1="172" y1="96" x2="179" y2="107" stroke="#0E2A4D" stroke-width="4"/><line x1="172" y1="86" x2="163" y2="92" stroke="#0E2A4D" stroke-width="3"/><line x1="172" y1="86" x2="181" y2="91" stroke="#0E2A4D" stroke-width="3"/>
+  ${car(40,101,38,20,"#1A56B0")}<line x1="82" y1="111" x2="112" y2="111" stroke="#fff" stroke-width="3" marker-end="url(#ah)"/>
+  ${lbl(59,150,"Вы","#1A56B0")}`,"Нерегулируемый пешеходный переход, по нему идёт пешеход, вы приближаетесь")
+};
+
+/* =====================================================================
+   БАНК ВОПРОСОВ (демонстрационный). Перед использованием сверить
+   с актуальной редакцией ПДД РК на adilet.zan.kz.
+   c — индекс правильного ответа (0..3)
+   ===================================================================== */
+const BANK=[
+ {id:1,topic:"Дорожные знаки",img:"noEntry",q:"Что означает этот знак?",a:["Движение запрещено","Въезд запрещён","Остановка запрещена","Обгон запрещён"],c:1,ex:"Знак «Въезд запрещён» запрещает въезд всех транспортных средств в данном направлении.",ref:"Приложение «Дорожные знаки»: запрещающие знаки"},
+ {id:2,topic:"Дорожные знаки",img:"noTraffic",q:"Что означает этот знак?",a:["Въезд запрещён","Стоянка запрещена","Движение запрещено","Конец всех ограничений"],c:2,ex:"Знак «Движение запрещено» запрещает движение всех транспортных средств.",ref:"Приложение «Дорожные знаки»: запрещающие знаки"},
+ {id:3,topic:"Дорожные знаки",img:"noStopping",q:"Что запрещает этот знак?",a:["Только стоянку","Остановку и стоянку","Въезд","Разворот"],c:1,ex:"Знак «Остановка запрещена» запрещает и остановку, и стоянку транспортных средств.",ref:"Приложение «Дорожные знаки»: запрещающие знаки"},
+ {id:4,topic:"Дорожные знаки",img:"noParking",q:"Что запрещает этот знак?",a:["Остановку и стоянку","Только стоянку, остановка разрешена","Въезд всех транспортных средств","Движение грузовых автомобилей"],c:1,ex:"Знак «Стоянка запрещена» запрещает стоянку; кратковременная остановка при этом разрешена.",ref:"Приложение «Дорожные знаки»: запрещающие знаки"},
+ {id:5,topic:"Дорожные знаки",img:"mainRoad",q:"Как называется этот знак?",a:["Главная дорога","Конец главной дороги","Уступите дорогу","Преимущество перед встречным движением"],c:0,ex:"Это знак приоритета «Главная дорога»: водитель пользуется преимуществом при проезде нерегулируемых перекрёстков.",ref:"Приложение «Дорожные знаки»: знаки приоритета"},
+ {id:6,topic:"Дорожные знаки",img:"giveWay",q:"Как называется этот знак?",a:["Движение без остановки запрещено","Уступите дорогу","Опасный поворот","Главная дорога"],c:1,ex:"Знак «Уступите дорогу» обязывает уступить дорогу транспортным средствам, движущимся по пересекаемой дороге.",ref:"Приложение «Дорожные знаки»: знаки приоритета"},
+ {id:7,topic:"Дорожные знаки",img:"stop",q:"Как водитель должен действовать при этом знаке?",a:["Снизить скорость и проехать перекрёсток","Остановиться перед стоп-линией, а если её нет — перед краем пересекаемой проезжей части, и уступить дорогу","Остановиться, только если приближаются другие транспортные средства","Подать звуковой сигнал и продолжить движение"],c:1,ex:"Знак «Движение без остановки запрещено» требует обязательной остановки и предоставления преимущества транспорту на пересекаемой дороге.",ref:"Приложение «Дорожные знаки»: знаки приоритета"},
+ {id:8,topic:"Дорожные знаки",img:"speed40",q:"Что означает этот знак?",a:["Рекомендуемая скорость 40 км/ч","Минимальная скорость 40 км/ч","Максимальная разрешённая скорость 40 км/ч","Расстояние до объекта 40 м"],c:2,ex:"Знак «Ограничение максимальной скорости» запрещает движение со скоростью, превышающей указанную на знаке.",ref:"Приложение «Дорожные знаки»: запрещающие знаки"},
+ {id:9,topic:"Сигналы светофора",img:"tlYellowBlink",q:"Что означает мигающий жёлтый сигнал светофора?",a:["Движение запрещено","Разрешает движение и информирует о нерегулируемом перекрёстке или пешеходном переходе","Предупреждает о скором включении зелёного сигнала","Разрешает движение только направо"],c:1,ex:"Жёлтый мигающий сигнал разрешает движение и информирует о наличии нерегулируемого перекрёстка или пешеходного перехода, предупреждает об опасности.",ref:"Раздел «Сигналы светофора и регулировщика»"},
+ {id:10,topic:"Сигналы светофора",img:"tlRedYellow",q:"Что означает одновременное включение красного и жёлтого сигналов?",a:["Разрешает движение","Запрещает движение и информирует о предстоящем включении зелёного сигнала","Разрешает движение только направо","Светофор неисправен, действуют знаки приоритета"],c:1,ex:"Сочетание красного и жёлтого сигналов запрещает движение и информирует о предстоящем включении зелёного.",ref:"Раздел «Сигналы светофора и регулировщика»"},
+ {id:11,topic:"Сигналы светофора",img:"tlYellow",q:"Вы подъезжаете к перекрёстку, и загорается жёлтый сигнал. Можно ли продолжить движение?",a:["Да, в любом случае","Нет, ни при каких условиях","Да, если остановиться можно только применив экстренное торможение","Да, если на переходе нет пешеходов"],c:2,ex:"Жёлтый сигнал запрещает движение, кроме случаев, когда водитель не может остановиться, не прибегая к экстренному торможению.",ref:"Раздел «Сигналы светофора и регулировщика»"},
+ {id:12,topic:"Сигналы светофора",img:"tlRedArrow",q:"Можно ли повернуть направо при таком сигнале светофора?",a:["Нет, горит красный сигнал","Да, в направлении стрелки, уступив дорогу транспортным средствам с других направлений","Да, без каких-либо ограничений","Только после полной остановки и звукового сигнала"],c:1,ex:"Включённая дополнительная секция разрешает движение в направлении стрелки; при этом нужно уступить дорогу транспортным средствам, движущимся с других направлений.",ref:"Раздел «Сигналы светофора и регулировщика»"},
+ {id:13,topic:"Железнодорожные переезды",img:"rail",q:"Что означают такие сигналы светофора на железнодорожном переезде?",a:["Переезд неисправен, проезд с осторожностью","Движение через переезд запрещено","Можно проехать, если поезда не видно","Движение разрешено со скоростью не более 20 км/ч"],c:1,ex:"Поочерёдно мигающие красные сигналы запрещают движение через переезд.",ref:"Раздел «Движение через железнодорожные пути»"},
+ {id:14,topic:"Проезд перекрёстков",img:"intersection",q:"Нерегулируемый перекрёсток равнозначных дорог. Кто должен проехать первым?",a:["Вы (синий автомобиль)","Красный автомобиль","Тот, кто подъехал к перекрёстку раньше","Тот, кто первым подаст звуковой сигнал"],c:1,ex:"На перекрёстке равнозначных дорог водитель обязан уступить дорогу транспортным средствам, приближающимся справа. Красный автомобиль находится справа от вас.",ref:"Раздел «Проезд перекрёстков»"},
+ {id:15,topic:"Проезд перекрёстков",img:"leftTurn",q:"Вы поворачиваете налево на зелёный сигнал светофора. Как нужно поступить?",a:["Проехать первым, так как горит зелёный","Уступить дорогу встречному автомобилю, движущемуся прямо","Проехать одновременно со встречным","Подать звуковой сигнал и проехать"],c:1,ex:"При повороте налево по зелёному сигналу водитель обязан уступить дорогу встречным транспортным средствам, движущимся прямо или направо.",ref:"Раздел «Проезд перекрёстков»"},
+ {id:16,topic:"Обгон",img:"solidLine",q:"Можно ли выполнить обгон в этой ситуации?",a:["Можно","Нельзя: пересекать сплошную линию разметки запрещено","Можно, если нет встречного транспорта","Можно только при скорости грузовика ниже 30 км/ч"],c:1,ex:"Сплошную линию разметки пересекать запрещено, поэтому обгон с выездом на встречную полосу здесь невозможен.",ref:"Приложение «Дорожная разметка»"},
+ {id:17,topic:"Аварийная остановка",img:"triangle",q:"На каком расстоянии от автомобиля нужно выставить знак аварийной остановки в населённом пункте?",a:["Не менее 5 м","Не менее 10 м","Не менее 15 м","Не менее 30 м"],c:2,ex:"Знак аварийной остановки выставляется не ближе 15 м от транспортного средства в населённом пункте и 30 м вне населённого пункта.",ref:"Раздел «Применение аварийной сигнализации и знака аварийной остановки»"},
+ {id:18,topic:"Скорость движения",img:null,q:"С какой максимальной скоростью разрешено движение легкового автомобиля в населённом пункте, если знаками не установлено иное?",a:["40 км/ч","50 км/ч","60 км/ч","70 км/ч"],c:2,ex:"В населённых пунктах разрешается движение со скоростью не более 60 км/ч.",ref:"Раздел «Скорость движения»"},
+ {id:19,topic:"Скорость движения",img:null,q:"Какая максимальная скорость разрешена легковому автомобилю вне населённого пункта (не на автомагистрали), если знаками не установлено иное?",a:["70 км/ч","80 км/ч","90 км/ч","110 км/ч"],c:2,ex:"Вне населённых пунктов на дорогах, кроме автомагистралей, легковым автомобилям разрешено движение со скоростью не более 90 км/ч.",ref:"Раздел «Скорость движения»"},
+ {id:20,topic:"Пешеходные переходы",img:"zebra",q:"Как вы обязаны поступить в этой ситуации?",a:["Подать звуковой сигнал пешеходу","Снизить скорость или остановиться, чтобы пропустить пешехода","Проехать, если пешеход ещё не дошёл до вашей полосы","Объехать пешехода сзади"],c:1,ex:"Водитель, приближающийся к нерегулируемому пешеходному переходу, обязан снизить скорость или остановиться, чтобы пропустить пешеходов.",ref:"Раздел «Пешеходные переходы и остановки маршрутных транспортных средств»"},
+ {id:21,topic:"Остановка и стоянка",img:null,q:"Остановка запрещена ближе какого расстояния перед пешеходным переходом?",a:["3 м","5 м","10 м","15 м"],c:1,ex:"Остановка запрещается на пешеходных переходах и ближе 5 м перед ними.",ref:"Раздел «Остановка и стоянка»"},
+ {id:22,topic:"Обязанности водителя",img:null,q:"Можно ли водителю пользоваться телефоном во время движения?",a:["Да, без ограничений","Только с устройством, позволяющим вести разговор без использования рук","Только в населённых пунктах","Только при скорости до 40 км/ч"],c:1,ex:"Водителю запрещается пользоваться телефоном во время движения, если он не оборудован устройством для разговора без использования рук.",ref:"Раздел «Обязанности водителей»"},
+ {id:23,topic:"Обязанности водителя",img:null,q:"Кто обязан быть пристёгнут ремнём безопасности во время движения, если ремни предусмотрены конструкцией автомобиля?",a:["Только водитель","Водитель и пассажир на переднем сиденье","Водитель и все пассажиры","Только пассажиры"],c:2,ex:"Водитель обязан быть пристёгнутым и не перевозить пассажиров, не пристёгнутых ремнями безопасности.",ref:"Раздел «Обязанности водителей»"},
+ {id:24,topic:"Аварийная остановка",img:null,q:"В каком случае водитель обязан включить аварийную сигнализацию?",a:["При остановке на красный сигнал светофора","При дорожно-транспортном происшествии","При перестроении в соседнюю полосу","При движении днём в ясную погоду"],c:1,ex:"Аварийная сигнализация включается, в частности, при дорожно-транспортном происшествии и при вынужденной остановке там, где она запрещена.",ref:"Раздел «Применение аварийной сигнализации и знака аварийной остановки»"},
+ {id:25,topic:"Буксировка",img:null,q:"Каким должно быть расстояние между транспортными средствами при буксировке на гибкой сцепке?",a:["1–2 м","2–3 м","4–6 м","8–10 м"],c:2,ex:"При буксировке на гибкой сцепке расстояние между буксирующим и буксируемым транспортными средствами должно быть в пределах 4–6 м.",ref:"Раздел «Буксировка механических транспортных средств»"},
+ {id:26,topic:"Техническое состояние",img:null,q:"При какой неисправности запрещено дальнейшее движение?",a:["Не работает магнитола","Не действует рабочая тормозная система","Не горит лампа освещения салона","Загрязнён кузов автомобиля"],c:1,ex:"При неисправности рабочей тормозной системы дальнейшее движение запрещено.",ref:"Перечень неисправностей, при которых запрещается эксплуатация"},
+ {id:27,topic:"Маневрирование",img:null,q:"Где запрещён разворот?",a:["На пешеходном переходе","На перекрёстке","На прямом участке дороги с прерывистой разметкой","На широкой дороге вне населённого пункта при хорошей видимости"],c:0,ex:"Разворот запрещается, в частности, на пешеходных переходах, в тоннелях, на мостах и железнодорожных переездах.",ref:"Раздел «Начало движения, маневрирование»"},
+ {id:28,topic:"Маневрирование",img:null,q:"Кому водитель должен уступить дорогу при перестроении?",a:["Транспортным средствам, движущимся попутно без изменения направления","Встречным транспортным средствам","Никому, если заранее включён указатель поворота","Только маршрутным автобусам"],c:0,ex:"При перестроении водитель должен уступить дорогу транспортным средствам, движущимся попутно без изменения направления движения.",ref:"Раздел «Начало движения, маневрирование»"},
+ {id:29,topic:"Действия при ДТП",img:null,q:"Что в первую очередь обязан сделать водитель, причастный к ДТП?",a:["Уехать с места, чтобы не создавать затор","Немедленно остановиться, включить аварийную сигнализацию и выставить знак аварийной остановки","Сфотографировать место и продолжить путь","Переставить автомобиль на обочину в любом случае"],c:1,ex:"Водитель, причастный к ДТП, обязан немедленно остановиться, включить аварийную сигнализацию, выставить знак аварийной остановки и не перемещать предметы, имеющие отношение к происшествию.",ref:"Раздел «Обязанности водителей, причастных к ДТП»"},
+ {id:30,topic:"Звуковые сигналы",img:null,q:"Когда разрешено подавать звуковой сигнал в населённом пункте?",a:["Чтобы поприветствовать знакомого","Только для предотвращения дорожно-транспортного происшествия","При каждом обгоне","При остановке у тротуара"],c:1,ex:"В населённых пунктах звуковой сигнал подаётся только для предотвращения дорожно-транспортного происшествия.",ref:"Раздел «Пользование внешними световыми приборами и звуковыми сигналами»"},
+ {id:31,topic:"Обгон",img:null,q:"Обгон запрещён на железнодорожных переездах и ближе какого расстояния перед ними?",a:["50 м","100 м","150 м","200 м"],c:1,ex:"Обгон запрещён на железнодорожных переездах и ближе 100 м перед ними.",ref:"Раздел «Обгон, опережение, встречный разъезд»"}
+];
+const BYID=Object.fromEntries(BANK.map(q=>[q.id,q]));
+const LETTERS=["А","Б","В","Г"];
+
+/* =====================================================================
+   ХРАНЕНИЕ
+   ===================================================================== */
+const KEY="pddkz_v1";
+const DEFAULTS={count:10,timeMin:20,threshold:8,minImg:3,cooldownMin:30,maxPerDay:3,adminHash:hash("admin123"),edition:"ПДД РК (постановление Правительства РК № 1196 от 13.11.2014), редакцию сверить на adilet.zan.kz"};
+let memoryStore=null;
+function hash(s){let h=5381;for(const ch of String(s))h=((h<<5)+h+ch.charCodeAt(0))|0;return "h"+(h>>>0).toString(36)}
+function load(){
+  try{const raw=localStorage.getItem(KEY);if(raw){const d=JSON.parse(raw);d.settings={...DEFAULTS,...d.settings};d.resets=d.resets||{};d.attempts=d.attempts||[];return d}}catch(e){}
+  return memoryStore||{settings:{...DEFAULTS},attempts:[],resets:{},current:null};
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){memoryStore=DB}}
+let DB=load();
+const S=()=>DB.settings;
+
+/* =====================================================================
+   УТИЛИТЫ
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+const app=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const fmtTime=sec=>{sec=Math.max(0,Math.ceil(sec));return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0")};
+const fmtDate=t=>new Date(t).toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+const dayKey=t=>{const d=new Date(t);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const NAME_RE=/^[A-Za-zА-Яа-яЁёӘәҒғҚқҢңӨөҰұҮүҺһІі' -]+$/;
+const cleanName=s=>s.trim().replace(/\s+/g," ").replace(/(^|[\s-])(\S)/g,(m,p,c)=>p+c.toUpperCase());
+const fullName=a=>[a.last,a.first,a.middle].filter(Boolean).join(" ");
+const shortName=a=>a.last+" "+a.first[0]+"."+(a.middle?a.middle[0]+".":"");
+function toast(msg,ms=3200){const t=document.createElement("div");t.className="toast";t.setAttribute("role","status");t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),ms)}
+function modal(html,{wide=false,onClose}={}){
+  const o=document.createElement("div");o.className="overlay";
+  o.innerHTML=`<div class="modal${wide?" wide":""}" role="dialog" aria-modal="true">${html}</div>`;
+  const close=()=>{o.remove();document.removeEventListener("keydown",k);onClose&&onClose()};
+  const k=e=>{if(e.key==="Escape")close()};
+  o.addEventListener("click",e=>{if(e.target===o||e.target.closest("[data-close]"))close()});
+  document.addEventListener("keydown",k);document.body.appendChild(o);
+  const f=o.querySelector("button,input");f&&f.focus();
+  return {el:o,close};
+}
+
+/* =====================================================================
+   ЛОГИКА ЭКЗАМЕНА
+   ===================================================================== */
+function current(){return DB.current?DB.attempts.find(a=>a.id===DB.current):null}
+function finalizeExpired(){
+  const now=Date.now();
+  DB.attempts.forEach(a=>{if(a.status==="in_progress"&&now>a.expiresAt+2000)finish(a,"time",true)});
+  save();
+}
+function buildTicket(normName){
+  const s=S(), dayAgo=Date.now()-864e5;
+  const recent=new Set(DB.attempts.filter(a=>a.norm===normName&&a.startedAt>dayAgo).flatMap(a=>a.qs.map(q=>q.id)));
+  const prefer=list=>shuffle(list.filter(q=>!recent.has(q.id))).concat(shuffle(list.filter(q=>recent.has(q.id))));
+  const pick=prefer(BANK.filter(q=>q.img)).slice(0,s.minImg);
+  const topicCount={};pick.forEach(q=>topicCount[q.topic]=(topicCount[q.topic]||0)+1);
+  const rest=prefer(BANK.filter(q=>!pick.includes(q)));
+  for(const q of rest){if(pick.length>=s.count)break;if((topicCount[q.topic]||0)<2){pick.push(q);topicCount[q.topic]=(topicCount[q.topic]||0)+1}}
+  for(const q of rest){if(pick.length>=s.count)break;if(!pick.includes(q))pick.push(q)}
+  return shuffle(pick).map(q=>({id:q.id,order:shuffle([0,1,2,3]),sel:null,seen:false}));
+}
+function checkLimit(norm){
+  const s=S(), since=DB.resets[norm]||0;
+  const mine=DB.attempts.filter(a=>a.norm===norm&&a.startedAt>since);
+  const prog=mine.find(a=>a.status==="in_progress");
+  if(prog)return {ok:false,reason:"progress",attempt:prog};
+  if(s.maxPerDay>0){const today=dayKey(Date.now());const n=mine.filter(a=>dayKey(a.startedAt)===today).length;
+    if(n>=s.maxPerDay)return {ok:false,reason:"daily",n};}
+  if(s.cooldownMin>0&&mine.length){const last=Math.max(...mine.map(a=>a.finishedAt||a.startedAt));const left=last+s.cooldownMin*6e4-Date.now();
+    if(left>0)return {ok:false,reason:"cooldown",left};}
+  return {ok:true};
+}
+function startExam(p){
+  const s=S(), now=Date.now();
+  const a={id:uid(),last:p.last,first:p.first,middle:p.middle,norm:p.norm,startedAt:now,expiresAt:now+s.timeMin*6e4,
+    timeMin:s.timeMin,threshold:s.threshold,count:s.count,status:"in_progress",qs:buildTicket(p.norm),finishedAt:null,score:null,passed:null,reason:null};
+  DB.attempts.push(a);DB.current=a.id;save();
+  state.idx=0;go("exam");
+}
+function finish(a,reason,silent){
+  if(a.status!=="in_progress")return;
+  const now=Date.now();
+  a.score=a.qs.filter(q=>q.sel!==null&&q.sel===BYID[q.id].c).length;
+  a.passed=a.score>=a.threshold;
+  a.finishedAt=Math.min(now,a.expiresAt);
+  a.status=reason==="time"?"expired":"completed";a.reason=reason;
+  if(DB.current===a.id)DB.current=null;
+  save();
+  if(!silent){state.resultId=a.id;go("result")}
+}
+
+/* =====================================================================
+   НАВИГАЦИЯ
+   ===================================================================== */
+const state={view:"home",idx:0,resultId:null,admin:false,adminTab:"overview",filter:"all",q:"",status:"all"};
+let tick=null;
+function go(view){
+  state.view=view;clearInterval(tick);tick=null;
+  document.querySelectorAll("#nav button").forEach(b=>b.toggleAttribute("aria-current",(b.dataset.go===view)||(b.dataset.go==="home"&&["start","instr","exam","result"].includes(view))));
+  document.querySelectorAll("#nav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
+  ({home:renderHome,start:renderStart,instr:renderInstr,exam:renderExam,result:renderResult,admin:renderAdmin})[view]();
+  window.scrollTo(0,0);
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b&&b.closest(".top")){finalizeExpired();go(b.dataset.go)}});
+window.addEventListener("beforeunload",e=>{if(state.view==="exam"&&current()){e.preventDefault();e.returnValue=""}});
+$("#foot").innerHTML=`Вопросы составлены по ${esc(S().edition)}. Демонстрационная версия: данные хранятся только в этом браузере на этом компьютере.`;
+
+/* =====================================================================
+   ЭКРАНЫ: ГЛАВНАЯ, ФИО, ИНСТРУКЦИЯ
+   ===================================================================== */
+function renderHome(){
+  const s=S(), cur=current();
+  app.innerHTML=`
+  <section class="hero">
+    <h1>Теоретический экзамен по ПДД Республики Казахстан</h1>
+    <p class="lead">Проверьте знание правил дорожного движения в формате, близком к настоящему экзамену. В конце вы увидите разбор каждого вопроса.</p>
+  </section>
+  <div class="road" aria-label="Условия экзамена">
+    <div class="plates">
+      <div class="plate"><div class="plate-in"><b>${s.count} вопросов</b><span>по 4 варианта ответа</span></div></div>
+      <div class="plate"><div class="plate-in"><b>${s.timeMin} минут</b><span>на весь экзамен</span></div></div>
+      <div class="plate"><div class="plate-in"><b>${s.threshold} из ${s.count}</b><span>правильных для сдачи</span></div></div>
+      <div class="plate"><div class="plate-in"><b>Можно вернуться</b><span>к пропущенным вопросам</span></div></div>
+    </div>
+  </div>
+  ${cur?`<div class="panel resume stack"><h3>У вас есть незавершённый экзамен</h3>
+     <p class="muted">${esc(fullName(cur))}. Осталось ${fmtTime((cur.expiresAt-Date.now())/1000)}. Время продолжает идти.</p>
+     <div class="row"><button class="btn" id="resume">Продолжить экзамен</button></div></div>`
+   :`<div class="row"><button class="btn" id="begin">Начать экзамен</button></div>`}
+  `;
+  $("#begin")&&($("#begin").onclick=()=>go("start"));
+  $("#resume")&&($("#resume").onclick=()=>{state.idx=Math.max(0,cur.qs.findIndex(q=>q.sel===null));go("exam")});
+}
+
+let pending=null;
+function renderStart(){
+  const p=pending||{};
+  app.innerHTML=`
+  <div class="panel stack" style="max-width:620px">
+    <h2>Данные кандидата</h2>
+    <p class="muted">ФИО будет указано в результатах экзамена.</p>
+    <form id="f" novalidate class="stack">
+      <div class="field" id="f-last"><label for="last">Фамилия</label><input type="text" id="last" autocomplete="family-name" maxlength="50" value="${esc(p.last||"")}"><div class="err-msg"></div></div>
+      <div class="field" id="f-first"><label for="first">Имя</label><input type="text" id="first" autocomplete="given-name" maxlength="50" value="${esc(p.first||"")}"><div class="err-msg"></div></div>
+      <div class="field" id="f-middle"><label for="middle">Отчество</label><input type="text" id="middle" maxlength="50" value="${esc(p.middle||"")}" ${p.noMiddle?"disabled":""}><div class="err-msg"></div></div>
+      <label class="check"><input type="checkbox" id="nomid" ${p.noMiddle?"checked":""}> Нет отчества</label>
+      <label class="check"><input type="checkbox" id="consent"> Я согласен(на) на обработку моих персональных данных (ФИО) для учёта результатов экзамена</label>
+      <div id="limit"></div>
+      <div class="row"><button class="btn" id="next" type="submit">Далее</button><button class="btn quiet" type="button" data-back>Отмена</button></div>
+    </form>
+  </div>`;
+  const f=$("#f"), next=$("#next");
+  $("[data-back]").onclick=()=>{pending=null;go("home")};
+  $("#nomid").onchange=e=>{$("#middle").disabled=e.target.checked;if(e.target.checked)$("#middle").value="";validate()};
+  function vField(id,req){
+    const el=$("#"+id), box=$("#f-"+id), v=el.value.trim(); let m="";
+    if(el.disabled) m="";
+    else if(!v){if(req)m="Заполните поле"}
+    else if(v.length<2)m="Минимум 2 символа";
+    else if(!NAME_RE.test(v))m="Только буквы, пробел, дефис или апостроф";
+    return {m,box,touched:el.dataset.t};
+  }
+  function validate(show){
+    const r=[vField("last",true),vField("first",true),vField("middle",false)];
+    r.forEach(x=>{if(show||x.touched){x.box.classList.toggle("err",!!x.m);x.box.querySelector(".err-msg").textContent=x.m}});
+    const ok=r.every(x=>!x.m)&&$("#consent").checked;
+    next.disabled=!ok;return ok;
+  }
+  f.addEventListener("input",e=>{if(e.target.id)e.target.dataset.t=1;$("#limit").innerHTML="";validate()});
+  f.addEventListener("change",()=>validate());
+  f.querySelectorAll("input[type=text]").forEach(i=>i.addEventListener("blur",()=>{i.dataset.t=1;validate()}));
+  validate();
+  f.onsubmit=e=>{
+    e.preventDefault();if(!validate(true))return;
+    const last=cleanName($("#last").value), first=cleanName($("#first").value), middle=$("#nomid").checked?"":cleanName($("#middle").value);
+    const norm=[last,first,middle].join(" ").toLowerCase().replace(/ё/g,"е").trim();
+    finalizeExpired();
+    const lim=checkLimit(norm);
+    if(!lim.ok){
+      if(lim.reason==="progress"){DB.current=lim.attempt.id;save();state.idx=0;toast("Продолжаем ваш незавершённый экзамен");go("exam");return}
+      const msg=lim.reason==="daily"?`Лимит попыток на сегодня исчерпан (${S().maxPerDay} из ${S().maxPerDay}). Попробуйте завтра.`
+        :`Повторная попытка будет доступна через ${Math.ceil(lim.left/6e4)} мин.`;
+      $("#limit").innerHTML=`<div class="notice bad" role="alert">${msg}</div>`;return;
+    }
+    pending={last,first,middle,norm,noMiddle:$("#nomid").checked};
+    go("instr");
+  };
+}
+
+function renderInstr(){
+  if(!pending)return go("start");
+  const s=S();
+  app.innerHTML=`
+  <div class="panel stack" style="max-width:720px">
+    <h2>Перед началом</h2>
+    <p>${esc(fullName(pending))}, ознакомьтесь с правилами экзамена.</p>
+    <ul class="stack" style="padding-left:20px;margin:0">
+      <li>В экзамене ${s.count} вопросов, у каждого 4 варианта ответа и только один правильный.</li>
+      <li>На весь экзамен даётся ${s.timeMin} минут. Отсчёт начнётся после нажатия кнопки «Начать экзамен» и не остановится, если закрыть страницу.</li>
+      <li>Вопрос можно пропустить и вернуться к нему позже. Ответ можно изменить до завершения экзамена.</li>
+      <li>Экзамен сдан, если правильных ответов не меньше ${s.threshold}. Вопросы без ответа считаются неправильными.</li>
+      <li>Когда время закончится, экзамен завершится автоматически.</li>
+      <li>Клавиши 1–4 выбирают ответ, стрелки ← → переключают вопросы, Enter сохраняет ответ и открывает следующий вопрос.</li>
+    </ul>
+    <div class="row"><button class="btn" id="go">Начать экзамен</button><button class="btn quiet" id="back">Изменить ФИО</button></div>
+  </div>`;
+  $("#go").onclick=()=>{const p=pending;pending=null;startExam(p)};
+  $("#back").onclick=()=>go("start");
+}
+
+/* =====================================================================
+   ЭКРАН ЭКЗАМЕНА
+   ===================================================================== */
+function renderExam(){
+  const a=current(); if(!a)return go("home");
+  if(Date.now()>a.expiresAt){finish(a,"time");return}
+  const i=state.idx, item=a.qs[i], q=BYID[item.id];
+  item.seen=true;save();
+  const answered=a.qs.filter(x=>x.sel!==null).length;
+  app.innerHTML=`
+  <div class="exam-head">
+    <div><div class="who">${esc(fullName(a))}</div><div class="small muted">Отвечено ${answered} из ${a.count}</div></div>
+    <div class="timer" id="timer" aria-label="Оставшееся время"><div class="timer-in" id="tval">${fmtTime((a.expiresAt-Date.now())/1000)}</div></div>
+    <button class="btn ghost" id="fin">Завершить экзамен</button>
+  </div>
+  <div class="lane" role="tablist" aria-label="Вопросы">
+    ${a.qs.map((x,k)=>{const cls=[k===i?"current":"",x.sel!==null?"answered":"",x.sel===null&&x.seen&&k!==i?"skipped":""].join(" ");
+      return `<button class="qnum ${cls}" data-q="${k}" role="tab" aria-selected="${k===i}" aria-label="Вопрос ${k+1}${x.sel!==null?", отвечен":x.seen?", пропущен":""}">${k+1}</button>`}).join("")}
+  </div>
+  <div class="lane-meta">
+    <div class="legend"><span><i style="background:#fff"></i>отвечен</span><span><i style="background:var(--amber)"></i>пропущен</span><span><i style="background:var(--blue)"></i>текущий</span></div>
+  </div>
+  <article class="qcard">
+    <div class="qtopic">Вопрос ${i+1} из ${a.count} · ${esc(q.topic)}</div>
+    ${q.img?`<div class="illu" id="illu" title="Нажмите, чтобы увеличить">${IMG[q.img]}</div>`:""}
+    <p class="qtext" id="qtext">${esc(q.q)}</p>
+    <div class="opts" role="radiogroup" aria-labelledby="qtext">
+      ${item.order.map((oi,k)=>`<button class="opt" role="radio" aria-checked="${item.sel===oi}" data-o="${oi}"><span class="let">${LETTERS[k]}</span><span>${esc(q.a[oi])}</span></button>`).join("")}
+    </div>
+    <div class="qnav">
+      <button class="btn ghost" id="prev" ${i===0?"disabled":""}>← Назад</button>
+      <span class="grow"></span>
+      <button class="btn quiet" id="skip">Пропустить</button>
+      <button class="btn" id="next">${item.sel!==null?"Далее":"Ответить и далее"}</button>
+    </div>
+  </article>`;
+
+  app.querySelectorAll(".qnum").forEach(b=>b.onclick=()=>{state.idx=+b.dataset.q;renderExam()});
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>select(+b.dataset.o));
+  $("#prev").onclick=()=>{if(i>0){state.idx--;renderExam()}};
+  $("#skip").onclick=()=>moveNext(true);
+  $("#next").onclick=()=>moveNext(false);
+  $("#fin").onclick=askFinish;
+  $("#illu")&&($("#illu").onclick=()=>modal(`${IMG[q.img]}<div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn" data-close>Закрыть</button></div>`,{wide:true}));
+
+  function select(oi){
+    if(Date.now()>a.expiresAt){finish(a,"time");return}
+    item.sel=oi;save();
+    app.querySelectorAll(".opt").forEach(b=>b.setAttribute("aria-checked",+b.dataset.o===oi));
+    $("#next").textContent="Ответить и далее";
+    const nb=app.querySelector(`.qnum[data-q="${i}"]`);nb.classList.add("answered");
+  }
+  function moveNext(){
+    if(i<a.count-1){state.idx=i+1;renderExam();return}
+    const k=a.qs.findIndex((x,j)=>x.sel===null&&j!==i);
+    if(k>-1){state.idx=k;renderExam()}else askFinish();
+  }
+  function askFinish(){
+    const empty=a.qs.map((x,k)=>x.sel===null?k+1:null).filter(Boolean);
+    const m=modal(`<h3>Завершить экзамен?</h3>
+      ${empty.length?`<p>Вы не ответили на ${empty.length} ${plural(empty.length,"вопрос","вопроса","вопросов")}: № ${empty.join(", ")}. Они будут засчитаны как неправильные.</p>`:`<p>Вы ответили на все вопросы. После завершения изменить ответы нельзя.</p>`}
+      <div class="row" style="justify-content:flex-end;margin-top:18px"><button class="btn ghost" data-close>Вернуться к вопросам</button><button class="btn" id="mfin">Завершить</button></div>`);
+    m.el.querySelector("#mfin").onclick=()=>{m.close();finish(a,"manual")};
+  }
+
+  const warned=a._warned||(a._warned={});
+  function upd(){
+    const left=(a.expiresAt-Date.now())/1000, t=$("#timer");
+    if(!t)return;
+    $("#tval").textContent=fmtTime(left);
+    t.classList.toggle("warn",left<=300&&left>60);t.classList.toggle("crit",left<=60);
+    if(left<=300&&left>298&&!warned.w5){warned.w5=1;toast("Осталось 5 минут")}
+    if(left<=60&&!warned.w1){warned.w1=1;toast("Осталась 1 минута")}
+    if(left<=0){clearInterval(tick);document.querySelectorAll(".overlay").forEach(o=>o.remove());finish(a,"time");toast("Время вышло. Экзамен завершён автоматически.",4500)}
+  }
+  clearInterval(tick);tick=setInterval(upd,250);upd();
+}
+function plural(n,a,b,c){const m10=n%10,m100=n%100;return m10===1&&m100!==11?a:m10>=2&&m10<=4&&(m100<10||m100>=20)?b:c}
+document.addEventListener("keydown",e=>{
+  if(state.view!=="exam"||document.querySelector(".overlay")||e.target.matches("input"))return;
+  if(/^[1-4]$/.test(e.key)){const b=app.querySelectorAll(".opt")[+e.key-1];b&&b.click()}
+  else if(e.key==="ArrowRight"){const a=current();if(a&&state.idx<a.count-1){state.idx++;renderExam()}}
+  else if(e.key==="ArrowLeft"){if(state.idx>0){state.idx--;renderExam()}}
+  else if(e.key==="Enter"&&!e.target.matches("button")){$("#next")&&$("#next").click()}
+});
+
+/* =====================================================================
+   РЕЗУЛЬТАТ (используется и в админке)
+   ===================================================================== */
+function ring(pct,color){const r=44,c=2*Math.PI*r;return `<svg class="score-ring" width="112" height="112" viewBox="0 0 112 112" aria-hidden="true"><circle cx="56" cy="56" r="${r}" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="10"/><circle cx="56" cy="56" r="${r}" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-dasharray="${c*pct/100} ${c}" transform="rotate(-90 56 56)"/><text x="56" y="63" text-anchor="middle" font-family="Bahnschrift,Segoe UI" font-size="24" font-weight="700" fill="#fff">${pct}%</text></svg>`}
+function resultHTML(a,admin){
+  const pct=Math.round(a.score/a.count*100), dur=Math.round((a.finishedAt-a.startedAt)/1000);
+  const rows=a.qs.map((x,k)=>{const q=BYID[x.id], ok=x.sel===q.c;
+    return `<details class="rv" data-ok="${ok}" ${!ok&&!admin?"":""}>
+      <summary><span class="mark ${ok?"ok":"bad"}" aria-label="${ok?"Верно":"Неверно"}">${ok?"✓":"✕"}</span><span>${k+1}. ${esc(q.q)}</span></summary>
+      <div class="rv-body">
+        ${q.img?`<div class="illu" style="cursor:default;max-width:520px">${IMG[q.img]}</div>`:""}
+        ${x.order.map((oi,j)=>{const isC=oi===q.c,isS=oi===x.sel;
+          return `<div class="ropt ${isC?"correct":isS?"wrong":""}"><span>${LETTERS[j]}. ${esc(q.a[oi])}</span>${isC?`<em style="color:var(--ok)">Правильный ответ</em>`:isS?`<em style="color:var(--bad)">Ваш ответ</em>`:""}</div>`}).join("")}
+        ${x.sel===null?`<p class="small" style="color:var(--bad);margin:8px 0 0">Ответ не дан</p>`:""}
+        <div class="explain">${esc(q.ex)}<br><span class="muted small">${esc(q.ref)}, ПДД РК</span></div>
+      </div></details>`}).join("");
+  return `
+  <div class="verdict ${a.passed?"pass":"fail"}">
+    ${ring(pct)}
+    <div><h1>${a.passed?"Экзамен сдан":"Экзамен не сдан"}</h1><div style="font-size:18px">${esc(fullName(a))}</div>
+    <div style="opacity:.9">${a.score} из ${a.count} правильных, для сдачи нужно ${a.threshold}</div></div>
+  </div>
+  <div class="facts">
+    <div class="fact"><span>Дата</span><b style="font-size:17px">${fmtDate(a.startedAt)}</b></div>
+    <div class="fact"><span>Затраченное время</span><b>${fmtTime(dur)}</b></div>
+    <div class="fact"><span>Ошибок</span><b>${a.count-a.score}</b></div>
+    <div class="fact"><span>Завершение</span><b style="font-size:17px">${a.reason==="time"?"по истечении времени":"вручную"}</b></div>
+  </div>
+  <div class="row no-print" style="justify-content:space-between;margin-top:8px">
+    <h2 style="margin:0">Разбор вопросов</h2>
+    <div class="seg" role="group" aria-label="Фильтр"><button aria-pressed="true" data-f="all">Все</button><button aria-pressed="false" data-f="bad">Только ошибки</button></div>
+  </div>
+  <div class="review" id="review">${rows}</div>`;
+}
+function bindResult(root){
+  root.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{
+    root.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+    root.querySelectorAll(".rv").forEach(r=>r.style.display=b.dataset.f==="bad"&&r.dataset.ok==="true"?"none":"");
+    if(b.dataset.f==="bad")root.querySelectorAll('.rv[data-ok="false"]').forEach(r=>r.open=true);
+  });
+}
+function renderResult(){
+  const a=DB.attempts.find(x=>x.id===state.resultId); if(!a)return go("home");
+  app.innerHTML=resultHTML(a)+`
+  <div class="row no-print" style="margin-top:24px">
+    <button class="btn" id="again">Пройти ещё раз</button><button class="btn ghost" onclick="window.print()">Распечатать результат</button><button class="btn quiet" data-home>На главную</button>
+  </div><p class="small muted no-print" id="againNote"></p>`;
+  bindResult(app);
+  $("[data-home]").onclick=()=>go("home");
+  $("#again").onclick=()=>{
+    const lim=checkLimit(a.norm);
+    if(!lim.ok){$("#againNote").textContent=lim.reason==="daily"?`Лимит попыток на сегодня исчерпан (${S().maxPerDay} из ${S().maxPerDay}). Попробуйте завтра.`:`Повторная попытка будет доступна через ${Math.ceil(lim.left/6e4)} мин.`;return}
+    pending={last:a.last,first:a.first,middle:a.middle,norm:a.norm,noMiddle:!a.middle};go("start");
+  };
+  // все разборы раскрыть при печати
+  window.onbeforeprint=()=>app.querySelectorAll(".rv").forEach(r=>r.open=true);
+}
+
+/* =====================================================================
+   АДМИН-ПАНЕЛЬ
+   ===================================================================== */
+function renderAdmin(){
+  if(!state.admin){
+    app.innerHTML=`<div class="panel stack" style="max-width:440px">
+      <h2>Вход для администратора</h2>
+      <form id="lf" class="stack"><div class="field"><label for="pw">Пароль</label><input type="password" id="pw" autocomplete="current-password"><div class="err-msg" id="pwe"></div></div>
+      <div class="row"><button class="btn" type="submit">Войти</button></div></form>
+      <p class="small muted">Пароль по умолчанию: admin123. Смените его в разделе «Настройки».</p></div>`;
+    $("#pw").focus();
+    $("#lf").onsubmit=e=>{e.preventDefault();if(hash($("#pw").value)===S().adminHash){state.admin=true;renderAdmin()}else{$("#pwe").textContent="Неверный пароль"}};
+    return;
+  }
+  finalizeExpired();
+  const tabs=[["overview","Обзор"],["attempts","Попытки"],["questions","Вопросы"],["settings","Настройки"]];
+  app.innerHTML=`<div class="row" style="justify-content:space-between"><h1 style="font-size:32px">Администратор</h1><button class="btn quiet" id="logout">Выйти</button></div>
+    <div class="tabs" role="tablist">${tabs.map(([k,t])=>`<button role="tab" aria-selected="${state.adminTab===k}" data-t="${k}">${t}</button>`).join("")}</div>
+    <div id="tab"></div>`;
+  app.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{state.adminTab=b.dataset.t;renderAdmin()});
+  $("#logout").onclick=()=>{state.admin=false;go("home")};
+  ({overview:tabOverview,attempts:tabAttempts,questions:tabQuestions,settings:tabSettings})[state.adminTab]($("#tab"));
+}
+const done=()=>DB.attempts.filter(a=>a.status!=="in_progress");
+function periodFilter(list){const p=state.period||"all";if(p==="all")return list;const days={today:0,"7":6,"30":29}[p];
+  const from=new Date();from.setHours(0,0,0,0);from.setDate(from.getDate()-days);return list.filter(a=>a.startedAt>=from.getTime())}
+function tabOverview(el){
+  const list=periodFilter(done()), n=list.length, passed=list.filter(a=>a.passed).length;
+  const avg=n?(list.reduce((s,a)=>s+a.score,0)/n):0, avgT=n?list.reduce((s,a)=>s+(a.finishedAt-a.startedAt),0)/n/1000:0;
+  const timeouts=list.filter(a=>a.reason==="time").length;
+  const dist=Array.from({length:11},(_,k)=>list.filter(a=>a.score===k).length), dmax=Math.max(1,...dist);
+  const days=[];for(let k=13;k>=0;k--){const d=new Date();d.setDate(d.getDate()-k);const key=dayKey(d);const day=done().filter(a=>dayKey(a.startedAt)===key);days.push({lbl:d.getDate()+"."+String(d.getMonth()+1).padStart(2,"0"),n:day.length,p:day.filter(a=>a.passed).length})}
+  const dm=Math.max(1,...days.map(d=>d.n));
+  const topics={};list.forEach(a=>a.qs.forEach(x=>{const q=BYID[x.id];const t=topics[q.topic]||(topics[q.topic]={s:0,c:0});t.s++;if(x.sel===q.c)t.c++}));
+  el.innerHTML=`
+  <div class="row" style="margin-bottom:16px"><span class="muted">Период:</span>
+    <div class="seg" role="group">${[["today","Сегодня"],["7","7 дней"],["30","30 дней"],["all","Всё время"]].map(([k,t])=>`<button data-p="${k}" aria-pressed="${(state.period||"all")===k}">${t}</button>`).join("")}</div></div>
+  <div class="kpis">
+    <div class="kpi"><span>Попыток</span><b>${n}</b></div>
+    <div class="kpi"><span>Сдали</span><b style="color:var(--ok)">${passed}${n?` <small style="font-size:16px">(${Math.round(passed/n*100)}%)</small>`:""}</b></div>
+    <div class="kpi"><span>Не сдали</span><b style="color:var(--bad)">${n-passed}</b></div>
+    <div class="kpi"><span>Средний балл</span><b>${avg.toFixed(1)}</b></div>
+    <div class="kpi"><span>Среднее время</span><b>${fmtTime(avgT)}</b></div>
+    <div class="kpi"><span>Завершено по таймеру</span><b>${timeouts}</b></div>
+  </div>
+  ${!n?`<div class="notice" style="margin-top:20px">За выбранный период попыток нет. Статистика появится после первого завершённого экзамена.</div>`:`
+  <div class="grid2" style="margin-top:20px">
+    <div class="panel"><h3>Распределение баллов</h3>
+      <div class="chart">${dist.map((v,k)=>`<div class="bar" title="${k} баллов: ${v}"><span>${v||""}</span><div class="b ${k>=S().threshold?"pass":""}" style="height:${v/dmax*100}%"></div><span>${k}</span></div>`).join("")}</div>
+      <p class="small muted">Зелёным — баллы, достаточные для сдачи.</p></div>
+    <div class="panel"><h3>Попытки за 14 дней</h3>
+      <div class="chart">${days.map(d=>`<div class="bar" title="${d.lbl}: ${d.n} попыток, сдали ${d.p}"><span>${d.n||""}</span><div class="b" style="height:${d.n/dm*100}%"><div class="p" style="height:${d.n?d.p/d.n*100:0}%"></div></div><span style="font-size:10px">${d.lbl}</span></div>`).join("")}</div>
+      <p class="small muted">Синим — все попытки, зелёным — сдавшие.</p></div>
+  </div>
+  <div class="panel" style="margin-top:16px"><h3>Правильные ответы по темам</h3>
+    <div class="tbl-wrap" style="border:0"><table><tbody>${Object.entries(topics).sort((a,b)=>a[1].c/a[1].s-b[1].c/b[1].s).map(([t,v])=>{const p=Math.round(v.c/v.s*100);return `<tr><td>${esc(t)}</td><td style="width:50%"><div class="meter"><i style="width:${p}%"></i></div></td><td>${p}%</td><td class="muted">${v.s} отв.</td></tr>`}).join("")}</tbody></table></div></div>`}`;
+  el.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{state.period=b.dataset.p;renderAdmin()});
+}
+function tabAttempts(el){
+  const q=state.q.toLowerCase().replace(/ё/g,"е");
+  let list=DB.attempts.slice().sort((a,b)=>b.startedAt-a.startedAt);
+  if(q)list=list.filter(a=>a.norm.includes(q));
+  if(state.status!=="all")list=list.filter(a=>state.status==="pass"?a.passed===true:state.status==="fail"?a.passed===false:a.status==="in_progress");
+  el.innerHTML=`
+  <div class="row" style="margin-bottom:14px">
+    <input class="search" style="max-width:340px" id="sq" placeholder="Поиск по ФИО" value="${esc(state.q)}" aria-label="Поиск по ФИО">
+    <div class="seg" role="group">${[["all","Все"],["pass","Сдали"],["fail","Не сдали"],["prog","В процессе"]].map(([k,t])=>`<button data-s="${k}" aria-pressed="${state.status===k}">${t}</button>`).join("")}</div>
+    <button class="btn ghost" id="csv" style="margin-left:auto">Скачать CSV для Excel</button>
+  </div>
+  ${list.length?`<div class="tbl-wrap"><table><thead><tr><th>ФИО</th><th>Дата</th><th>Время</th><th>Балл</th><th>Статус</th><th>Завершение</th></tr></thead><tbody>
+    ${list.map(a=>`<tr class="${a.status!=="in_progress"?"click":""}" data-id="${a.id}"><td>${esc(fullName(a))}</td><td>${fmtDate(a.startedAt)}</td>
+      <td>${a.finishedAt?fmtTime((a.finishedAt-a.startedAt)/1000):"—"}</td><td>${a.score??"—"}${a.score!=null?" / "+a.count:""}</td>
+      <td>${a.status==="in_progress"?`<span class="tag prog">В процессе</span>`:a.passed?`<span class="tag ok">Сдал</span>`:`<span class="tag bad">Не сдал</span>`}</td>
+      <td class="muted">${a.reason==="time"?"по времени":a.reason==="manual"?"вручную":"—"}</td></tr>`).join("")}
+  </tbody></table></div><p class="small muted">Нажмите на строку, чтобы открыть разбор попытки. Показано: ${list.length}.</p>`
+  :`<div class="notice">${DB.attempts.length?"По этому запросу попыток не найдено. Измените поиск или фильтр.":"Пока никто не проходил экзамен на этом компьютере."}</div>`}`;
+  const sq=$("#sq");sq.oninput=()=>{state.q=sq.value;const pos=sq.selectionStart;renderAdmin();const n=$("#sq");n.focus();n.setSelectionRange(pos,pos)};
+  el.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{state.status=b.dataset.s;renderAdmin()});
+  el.querySelectorAll("tr.click").forEach(r=>r.onclick=()=>openAttempt(r.dataset.id));
+  $("#csv").onclick=()=>exportCSV(list);
+}
+function openAttempt(id){
+  const a=DB.attempts.find(x=>x.id===id);
+  const m=modal(`<div style="max-height:80vh;overflow:auto">${resultHTML(a,true)}</div>
+    <div class="row" style="justify-content:space-between;margin-top:16px"><button class="btn ghost" id="rst">Снять ограничение пересдачи для кандидата</button><button class="btn" data-close>Закрыть</button></div>`);
+  m.el.querySelector(".modal").style.maxWidth="820px";bindResult(m.el);
+  m.el.querySelector("#rst").onclick=()=>{DB.resets[a.norm]=Date.now();save();toast("Ограничение снято: "+fullName(a)+" может начать экзамен сейчас")};
+}
+function exportCSV(list){
+  const head=["ФИО","Начало","Окончание","Длительность (мин:сек)","Правильных","Всего","Процент","Результат","Завершение"];
+  const rows=list.map(a=>[fullName(a),fmtDate(a.startedAt),a.finishedAt?fmtDate(a.finishedAt):"",a.finishedAt?fmtTime((a.finishedAt-a.startedAt)/1000):"",a.score??"",a.count,a.score!=null?Math.round(a.score/a.count*100):"",
+    a.status==="in_progress"?"В процессе":a.passed?"Сдал":"Не сдал",a.reason==="time"?"По времени":a.reason==="manual"?"Вручную":""]);
+  const csv="\uFEFF"+[head,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(";")).join("\r\n");
+  download(csv,"pdd-attempts-"+dayKey(Date.now())+".csv","text/csv;charset=utf-8");
+}
+function download(text,name,type){const b=new Blob([text],{type});const u=URL.createObjectURL(b);const l=document.createElement("a");l.href=u;l.download=name;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function tabQuestions(el){
+  const stats={};done().forEach(a=>a.qs.forEach(x=>{const s=stats[x.id]||(stats[x.id]={s:0,c:0});s.s++;if(x.sel===BYID[x.id].c)s.c++}));
+  const list=BANK.map(q=>({q,s:stats[q.id]||{s:0,c:0}})).sort((a,b)=>(a.s.s?a.s.c/a.s.s:2)-(b.s.s?b.s.c/b.s.s:2));
+  el.innerHTML=`<p class="muted">В банке ${BANK.length} вопросов, из них ${BANK.filter(q=>q.img).length} с иллюстрациями. Список отсортирован от самых сложных (наименьший процент правильных ответов).</p>
+  <div class="tbl-wrap"><table><thead><tr><th>№</th><th>Вопрос</th><th>Тема</th><th>Илл.</th><th>Показов</th><th>Верно</th></tr></thead><tbody>
+  ${list.map(({q,s})=>{const p=s.s?Math.round(s.c/s.s*100):null;return `<tr><td>${q.id}</td><td style="white-space:normal;min-width:280px">${esc(q.q)}</td><td>${esc(q.topic)}</td><td>${q.img?"да":""}</td><td>${s.s}</td>
+    <td>${p===null?"—":`<div class="row" style="gap:8px;flex-wrap:nowrap"><div class="meter" style="width:70px"><i style="width:${p}%"></i></div>${p}%</div>`}</td></tr>`}).join("")}
+  </tbody></table></div>
+  <p class="small muted">Вопросы хранятся в самом файле, в блоке «БАНК ВОПРОСОВ». Чтобы изменить или добавить вопрос, откройте файл в Блокноте.</p>`;
+}
+function tabSettings(el){
+  const s=S();
+  el.innerHTML=`<form id="sf" class="panel stack" style="max-width:640px">
+    <h3>Параметры экзамена</h3>
+    <div class="grid2">
+      <div class="field"><label for="s1">Время на экзамен, мин</label><input type="number" id="s1" min="1" max="120" value="${s.timeMin}"></div>
+      <div class="field"><label for="s2">Правильных для сдачи</label><input type="number" id="s2" min="1" max="${s.count}" value="${s.threshold}"></div>
+      <div class="field"><label for="s3">Пауза между попытками, мин</label><input type="number" id="s3" min="0" max="1440" value="${s.cooldownMin}"></div>
+      <div class="field"><label for="s4">Попыток в сутки на кандидата</label><input type="number" id="s4" min="0" max="50" value="${s.maxPerDay}"></div>
+    </div>
+    <p class="small muted">0 в полях пересдачи отключает ограничение. Изменения действуют на новые попытки.</p>
+    <div class="row"><button class="btn" type="submit">Сохранить параметры</button></div>
+  </form>
+  <form id="pf" class="panel stack" style="max-width:640px;margin-top:16px">
+    <h3>Пароль администратора</h3>
+    <div class="grid2"><div class="field"><label for="p1">Новый пароль</label><input type="password" id="p1" autocomplete="new-password"></div>
+    <div class="field"><label for="p2">Повторите пароль</label><input type="password" id="p2" autocomplete="new-password"></div></div>
+    <div class="row"><button class="btn" type="submit">Сменить пароль</button></div>
+  </form>
+  <div class="panel stack" style="max-width:640px;margin-top:16px">
+    <h3>Данные</h3>
+    <p class="muted">Попытки хранятся только в этом браузере. Сохраняйте резервную копию, чтобы не потерять статистику при очистке браузера или переносе на другой компьютер.</p>
+    <div class="row"><button class="btn ghost" id="bk">Скачать резервную копию</button>
+      <label class="btn ghost" style="cursor:pointer">Восстановить из копии<input type="file" id="rs" accept=".json" hidden></label>
+      <button class="btn danger" id="wipe">Удалить все попытки</button></div>
+  </div>`;
+  $("#sf").onsubmit=e=>{e.preventDefault();const v=id=>Math.max(0,parseInt($(id).value,10)||0);
+    s.timeMin=Math.max(1,v("#s1"));s.threshold=Math.min(s.count,Math.max(1,v("#s2")));s.cooldownMin=v("#s3");s.maxPerDay=v("#s4");save();toast("Параметры сохранены");renderAdmin()};
+  $("#pf").onsubmit=e=>{e.preventDefault();const a=$("#p1").value,b=$("#p2").value;
+    if(a.length<6)return toast("Пароль должен быть не короче 6 символов");if(a!==b)return toast("Пароли не совпадают");
+    s.adminHash=hash(a);save();toast("Пароль изменён");$("#pf").reset()};
+  $("#bk").onclick=()=>download(JSON.stringify(DB,null,1),"pdd-backup-"+dayKey(Date.now())+".json","application/json");
+  $("#rs").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.attempts))throw 0;
+    DB={settings:{...DEFAULTS,...d.settings},attempts:d.attempts,resets:d.resets||{},current:null};save();toast("Данные восстановлены: "+d.attempts.length+" попыток");renderAdmin()}catch(err){toast("Файл не подходит: выберите резервную копию, скачанную на этой странице")}};r.readAsText(f)};
+  $("#wipe").onclick=()=>{const m=modal(`<h3>Удалить все попытки?</h3><p>Будут удалены ${DB.attempts.length} попыток и вся статистика. Это действие нельзя отменить. Настройки и пароль сохранятся.</p>
+    <div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn ghost" data-close>Отмена</button><button class="btn danger" id="yes">Удалить</button></div>`);
+    m.el.querySelector("#yes").onclick=()=>{DB.attempts=[];DB.resets={};DB.current=null;save();m.close();toast("Все попытки удалены");renderAdmin()}};
+}
+
+/* Старт */
+finalizeExpired();
+go("home");
+</script>
+</body>
+</html>
